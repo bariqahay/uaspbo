@@ -1,0 +1,156 @@
+/* Reset dan base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Container untuk form */
+.form-container {
+    background: white;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+/* Styling untuk heading */
+h2 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #333;
+    font-size: 28px;
+    font-weight: 300;
+}
+
+/* Styling untuk form */
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+/* Styling untuk label */
+label {
+    margin-bottom: 5px;
+    color: #555;
+    font-weight: 500;
+    font-size: 14px;
+}
+
+/* Styling untuk input dan select */
+input[type="text"],
+input[type="password"],
+select {
+    padding: 12px 15px;
+    margin-bottom: 20px;
+    border: 2px solid #e1e1e1;
+    border-radius: 6px;
+    font-size: 16px;
+    transition: border-color 0.3s ease;
+    outline: none;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+select:focus {
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+/* Styling untuk select */
+select {
+    cursor: pointer;
+    background-color: white;
+}
+
+/* Styling untuk button */
+button[type="submit"] {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 14px 20px;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    margin-top: 10px;
+}
+
+button[type="submit"]:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+}
+
+button[type="submit"]:active {
+    transform: translateY(0);
+}
+
+/* Styling untuk pesan error dan logout */
+.message {
+    padding: 12px;
+    margin-top: 20px;
+    border-radius: 6px;
+    text-align: center;
+    font-size: 14px;
+}
+
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    border: 1px solid #fcc;
+}
+
+.logout-message {
+    background-color: #efe;
+    color: #363;
+    border: 1px solid #cfc;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .form-container {
+        padding: 30px 20px;
+        margin: 10px;
+    }
+    
+    h2 {
+        font-size: 24px;
+    }
+    
+    input[type="text"],
+    input[type="password"],
+    select,
+    button[type="submit"] {
+        font-size: 14px;
+        padding: 10px 12px;
+    }
+}
+
+/* Animation untuk form container */
+.form-container {
+    animation: slideUp 0.6s ease-out;
+}
+
+@keyframes slideUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

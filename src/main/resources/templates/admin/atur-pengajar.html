@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Atur Pengajar Kelas</title>
+    <style>
+        body {
+            background: #6f42c1;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin: 0 0 30px 0;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        .alert {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: 500;
+        }
+        
+        .alert-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .alert-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        label {
+            display: block;
+            color: #2c3e50;
+            margin: 15px 0 5px 0;
+            font-weight: 500;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.2s ease;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #6f42c1;
+        }
+        
+        button {
+            background: #6f42c1;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: background 0.2s ease;
+        }
+        
+        button:hover {
+            background: #5a2d91;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 0 10px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Atur Pengajar Kelas</h1>
+
+        <!-- Alert -->
+        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
+
+        <form method="post" th:action="@{/admin/kelas/atur-pengajar}">
+            <label>Pilih Kelas:</label>
+            <select name="kelasId" required>
+                <option th:each="k : ${kelasTanpaDosen}" 
+                        th:value="${k.id}" 
+                        th:text="${k.namaKelas}">
+                </option>
+            </select>
+
+            <label>Pilih Dosen:</label>
+            <select name="dosenId" required>
+                <option th:each="d : ${dosenList}" 
+                        th:value="${d.id}" 
+                        th:text="${d.nama}">
+                </option>
+            </select>
+
+            <button type="submit">Assign Dosen</button>
+        </form>
+    </div>
+</body>
+</html>

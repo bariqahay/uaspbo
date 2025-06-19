@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎓 Dashboard Mahasiswa</title>
+    <style>
+        body {
+            background: #6f42c1;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            position: relative;
+        }
+        
+        .btn-logout {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #dc3545;
+            color: white;
+            padding: 10px 16px;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: background 0.2s ease;
+        }
+        
+        .btn-logout:hover {
+            background: #c82333;
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin: 20px 0 25px 0;
+            font-size: 1.8rem;
+        }
+        
+        h3 {
+            color: #2c3e50;
+            margin: 25px 0 15px 0;
+        }
+        
+        .info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border-left: 4px solid #6f42c1;
+        }
+        
+        .info p {
+            margin: 8px 0;
+            color: #2c3e50;
+        }
+        
+        .info strong {
+            color: #6f42c1;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        th {
+            background: #6f42c1;
+            color: white;
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 500;
+        }
+        
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        tr:nth-child(even) {
+            background: #f8f9fa;
+        }
+        
+        tr:hover {
+            background: #e9ecef;
+        }
+        
+        .empty-state {
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            padding: 20px;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 0 10px;
+                padding: 20px;
+            }
+            
+            .btn-logout {
+                position: static;
+                display: block;
+                width: fit-content;
+                margin: 0 0 20px auto;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+                margin-top: 0;
+            }
+            
+            .info {
+                padding: 15px;
+            }
+            
+            th, td {
+                padding: 10px 8px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a class="btn-logout" th:href="@{/logout}">🔓 Logout</a>
+
+        <h1>🎓 Dashboard Mahasiswa</h1>
+
+        <div class="info">
+            <p>👋 Halo, <strong th:text="${mahasiswa.nama}">Nama Mahasiswa</strong></p>
+            <p>📚 Jumlah Kelas yang Diikuti: <strong th:text="${kelasTerdaftar.size()}">0</strong></p>
+        </div>
+
+        <h3>🧠 Daftar Semua Kelas (Peluang Ikut)</h3>
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama Kelas</th>
+                    <th>Mata Kuliah</th>
+                    <th>Dosen</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="k : ${semuaKelas}">
+                    <td th:text="${k.nama}">-</td>
+                    <td th:text="${k.matakuliah.nama}">-</td>
+                    <td th:text="${k.dosen?.nama ?: 'Belum Ada'}">-</td>
+                    <td>
+                        <div th:if="${#lists.contains(k.peserta.?[mahasiswa.id == mahasiswa.id], true)}">
+                            <span style="color: #7f8c8d; font-style: italic;">✅ Sudah terdaftar</span>
+                        </div>
+                        <div th:unless="${#lists.contains(k.peserta.?[mahasiswa.id == mahasiswa.id], true)}">
+                            <form th:action="@{/mahasiswa/daftar-kelas}" method="post">
+                                <input type="hidden" name="kelasId" th:value="${k.id}" />
+                                <button type="submit">Daftar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                <tr th:if="${semuaKelas.size() == 0}">
+                    <td colspan="4" class="empty-state">Belum ada kelas tersedia.</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,26 +1,24 @@
-package com.satuhati.satuhatis.entity;
+package com.satuhati.satuhatis.model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 @Entity
 @Table(name = "users")
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
-@Builder
+@Getter
+@Setter
 public class User {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false, unique = true)
     private String username;
 
     @Column(nullable = false)
     private String password;
 
     @Column(nullable = false)
-    private String role; // ROLE_ADMIN, ROLE_DOSEN, ROLE_MAHASISWA
+    private String role;
 }

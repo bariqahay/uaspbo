@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Detail Kelas - SATUHATIS</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; background: #f5f5f5; }
+        h1 { color: #6f42c1; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 10px; border: 1px solid #ccc; text-align: left; }
+        form { margin-top: 20px; }
+        select, button { padding: 8px; font-size: 1em; margin-right: 10px; }
+        .success { color: green; margin-top: 10px; }
+        .error { color: red; margin-top: 10px; }
+    </style>
+</head>
+<body>
+    <h1 th:text="'Detail Kelas: ' + ${kelas.namaKelas}">Detail Kelas</h1>
+
+    <div>
+        <strong>Dosen:</strong> <span th:text="${kelas.dosen != null ? kelas.dosen.nama : 'Belum di-assign'}"></span><br>
+        <strong>Mata Kuliah:</strong> <span th:text="${kelas.matakuliah != null ? kelas.matakuliah.nama : '-'}"></span><br>
+        <strong>Kapasitas:</strong> <span th:text="${kelas.kapasitas}"></span><br>
+    </div>
+
+    <h2>🧑‍🎓 Daftar Mahasiswa</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Nama</th>
+                <th>NIM</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="peserta : ${peserta}">
+                <td th:text="${peserta.mahasiswa.nama}"></td>
+                <td th:text="${peserta.mahasiswa.nim}"></td>
+                <td>
+                    <form th:action="@{/admin/kelas/{id}/hapus-peserta(id=${kelas.id})}" method="post" style="display:inline;">
+                        <input type="hidden" name="pesertaId" th:value="${peserta.id}" />
+                        <button type="submit">❌ Remove</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2>➕ Tambah Mahasiswa ke Kelas</h2>
+    <form th:action="@{/admin/kelas/{id}/tambah-peserta(id=${kelas.id})}" method="post">
+        <select name="mahasiswaId" required>
+            <option value="">-- Pilih Mahasiswa --</option>
+            <option th:each="m : ${mahasiswaList}" 
+                    th:value="${m.id}" 
+                    th:text="${m.nama + ' (' + m.nim + ')'}"></option>
+        </select>
+        <button type="submit">Tambah</button>
+    </form>
+
+    <div class="success" th:if="${success}" th:text="${success}"></div>
+    <div class="error" th:if="${error}" th:text="${error}"></div>
+</body>
+</html>

@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Daftar Mahasiswa - SATUHATIS</title>
+    <style>
+        body { background: #6f42c1; min-height: 100vh; padding: 20px; font-family: Arial, sans-serif; margin: 0; }
+        .container { max-width: 1000px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        h1 { color: #2c3e50; margin: 0 0 30px 0; text-align: center; }
+        .top-action { margin-bottom: 25px; }
+        .btn { display: inline-block; padding: 10px 20px; background: #6f42c1; color: white; text-decoration: none; border-radius: 8px; margin-right: 8px; transition: all 0.2s ease; font-weight: 500; }
+        .btn:hover { background: #5a2d91; transform: translateY(-2px); }
+        .btn-danger { background: #dc3545; }
+        .btn-danger:hover { background: #c82333; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th { background: #f8f9fa; padding: 15px; text-align: left; color: #2c3e50; font-weight: 600; border-bottom: 2px solid #e9ecef; }
+        td { padding: 15px; border-bottom: 1px solid #e9ecef; }
+        tr:hover { background: #f8f9fa; }
+        @media (max-width: 768px) { .container { margin: 0 10px; padding: 20px; } table { font-size: 14px; } }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>👨‍🎓 Daftar Mahasiswa</h1>
+
+        <div class="top-action">
+            <a class="btn" th:href="@{/admin/mahasiswa/tambah}">➕ Tambah Mahasiswa</a>
+        </div>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>NIM</th>
+                    <th>Username</th>
+                    <th>Aksi</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="m : ${mahasiswaList}">
+                    <td th:text="${m.nama}">Nama</td>
+                    <td th:text="${m.nim}">NIM</td>
+                    <td th:text="${m.user.username}">Username</td>
+                    <td>
+                        <a class="btn" th:href="@{'/admin/mahasiswa/edit/' + ${m.id}}">✏ Edit</a>
+                        <a class="btn btn-danger" th:href="@{'/admin/mahasiswa/hapus/' + ${m.id}}" onclick="return confirm('Yakin hapus?')">🗑 Hapus</a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

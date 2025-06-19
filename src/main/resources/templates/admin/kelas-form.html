@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Form Kelas</title>
+    <style>
+        body {
+            background: #6f42c1;
+            min-height: 100vh;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            margin: 0;
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        
+        h1 {
+            color: #2c3e50;
+            margin: 0 0 30px 0;
+            text-align: center;
+            font-size: 1.8rem;
+        }
+        
+        label {
+            display: block;
+            color: #2c3e50;
+            margin: 15px 0 5px 0;
+            font-weight: 500;
+        }
+        
+        input, select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+            transition: border-color 0.2s ease;
+        }
+        
+        input:focus, select:focus {
+            outline: none;
+            border-color: #6f42c1;
+        }
+        
+        button {
+            background: #6f42c1;
+            color: white;
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 20px 10px 20px 0;
+            transition: background 0.2s ease;
+        }
+        
+        button:hover {
+            background: #5a2d91;
+        }
+        
+        .back-link {
+            color: #6f42c1;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s ease;
+        }
+        
+        .back-link:hover {
+            color: #5a2d91;
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                margin: 0 10px;
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 th:text="${kelas.id == null} ? 'Tambah Kelas' : 'Edit Kelas'"></h1>
+
+        <form th:action="@{/admin/kelas/simpan}" th:object="${kelas}" method="post">
+            <input type="hidden" th:field="*{id}" />
+
+            <label>Nama Kelas:</label>
+            <input type="text" th:field="*{namaKelas}" required />
+
+            <label>Mata Kuliah:</label>
+            <select th:field="*{matakuliah.id}">
+                <option value="" disabled selected>-- Pilih Matkul --</option>
+                <option th:each="mk : ${matakuliahList}"
+                        th:value="${mk.id}"
+                        th:text="${mk.nama}"
+                        th:selected="${mk.id == kelas.mataKuliah?.id}">
+                </option>
+            </select>
+
+            <label>Dosen Pengajar:</label>
+            <select th:field="*{dosen.id}">
+                <option value="" disabled selected>-- Pilih Dosen --</option>
+                <option th:each="d : ${dosenList}"
+                        th:value="${d.id}"
+                        th:text="${d.nama}"
+                        th:selected="${d.id == kelas.dosen?.id}">
+                </option>
+            </select>
+
+            <button type="submit">Simpan</button>
+            <a href="/admin/kelas" class="back-link">← Kembali ke daftar kelas</a>
+        </form>
+    </div>
+</body>
+</html>

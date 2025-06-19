@@ -3,34 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link rel="stylesheet" th:href="@{main.css}">
+    <title>Login - SATUHATIS</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <!-- Icons untuk input fields -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.0/feather.min.css">
 </head>
 <body>
-    <div class="form-container">
-        <h2>Login</h2>
-        <form th:action="@{/login}" method="post">
-            <label for="username">Username:</label>
-            <input type="text" id="username" name="username" required/>
-            
-            <label for="password">Password:</label>
-            <input type="password" id="password" name="password" required/>
-            
-            <button type="submit">Login</button>
-        </form>
+    <div class="login-container">
+        <!-- Header dengan Branding -->
+        <div class="login-header">
+            <h1 class="brand-title">SATUHATIS</h1>
+            <p class="brand-subtitle">Sistem Administrasi Terpadu</p>
+        </div>
         
-        <p th:if="${param.error}" class="message error-message">
-            Invalid username or password.
-        </p>
-        <p th:if="${param.logout}" class="message logout-message">
-            You have been logged out.
-        </p>
-        
-        <div style="text-align: center; margin-top: 20px;">
-            <a th:href="@{/register}" style="color: #667eea; text-decoration: none;">
-                Don't have an account? Register here
-            </a>
+        <!-- Form Section -->
+        <div class="login-form">
+            <div class="welcome-text">
+                <h3>Selamat Datang</h3>
+                <p>Silakan masuk ke akun Anda</p>
+            </div>
+            
+            <!-- Alert Messages -->
+            <div th:if="${param.error}">
+                <p style="color:red">Username atau password tidak valid</p>
+            </div>
+            <div th:if="${param.logout}">
+                <p style="color:green">Anda berhasil logout</p>
+            </div>
+            
+            <!-- Login Form -->
+            <form th:action="@{/login}" method="post">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <div class="input-group">
+                        <input type="text" 
+                               id="username" 
+                               name="username" 
+                               class="form-input" 
+                               placeholder="Masukkan username"
+                               required
+                               autocomplete="username"/>
+                        <span class="input-icon">👤</span>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <div class="input-group">
+                        <input type="password" 
+                               id="password" 
+                               name="password" 
+                               class="form-input" 
+                               placeholder="Masukkan password"
+                               required
+                               autocomplete="current-password"/>
+                        <span class="input-icon">🔒</span>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary">
+                    Masuk ke SATUHATIS
+                </button>
+            </form>
+            
+            <div class="form-links">
+                <a href="#" onclick="alert('Hubungi administrator untuk reset password')">
+                    Lupa password?
+                </a>
+            </div>
         </div>
     </div>
+    
+    <!-- Optional: Add some interactivity -->
+    <script>
+        // Add loading state to button on form submit
+        document.querySelector('form').addEventListener('submit', function() {
+            const button = this.querySelector('button[type="submit"]');
+            button.disabled = true;
+            button.innerHTML = 'Memproses...';
+        });
+        
+        // Add focus effects
+        document.querySelectorAll('.form-input').forEach(input => {
+            input.addEventListener('focus', function() {
+                this.parentNode.parentNode.querySelector('label').style.color = '#3B82F6';
+            });
+            
+            input.addEventListener('blur', function() {
+                this.parentNode.parentNode.querySelector('label').style.color = '#111827';
+            });
+        });
+    </script>
 </body>
 </html>

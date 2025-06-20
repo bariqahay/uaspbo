@@ -3,139 +3,97 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>📘 Detail Kelas</title>
+    <title>📘 Detail Kelas - SATUHATIS</title>
     <style>
-        body {
-            background: #6f42c1;
-            min-height: 100vh;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-            margin: 0;
-        }
-        
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-        
-        h1 {
-            color: #2c3e50;
-            margin: 0 0 25px 0;
-            font-size: 1.8rem;
-        }
-        
-        h3 {
-            color: #2c3e50;
-            margin: 25px 0 15px 0;
-        }
-        
-        .info {
-            background: #f8f9fa;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            border-left: 4px solid #6f42c1;
-        }
-        
-        .info p {
-            margin: 8px 0;
-            color: #2c3e50;
-        }
-        
-        .info strong {
-            color: #6f42c1;
-        }
-        
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            border-radius: 8px;
-            overflow: hidden;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-        
-        th {
-            background: #6f42c1;
-            color: white;
-            padding: 15px;
-            text-align: left;
-            font-weight: 500;
-        }
-        
-        td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e9ecef;
-        }
-        
-        tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-        
-        tr:hover {
-            background: #e9ecef;
-        }
-        
-        .empty-state {
-            text-align: center;
-            color: #7f8c8d;
-            font-style: italic;
-            padding: 20px;
-        }
-        
-        @media (max-width: 768px) {
-            .container {
-                margin: 0 10px;
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 1.5rem;
-            }
-            
-            .info {
-                padding: 15px;
-            }
-            
-            th, td {
-                padding: 10px 8px;
-                font-size: 14px;
-            }
-        }
+        body{background:#6f42c1;min-height:100vh;padding:20px;font-family:Arial,sans-serif;margin:0}
+        .container{max-width:900px;margin:0 auto}
+        .header{background:white;padding:30px;border-radius:15px;text-align:center;margin-bottom:30px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+        .header h1{color:#2c3e50;margin:0;font-size:2rem}
+        .header p{color:#7f8c8d;margin:5px 0 0 0}
+        .info-card{background:white;padding:25px;border-radius:12px;margin-bottom:20px;box-shadow:0 4px 12px rgba(0,0,0,0.15);border-left:4px solid #6f42c1}
+        .info-card .info-item{margin:10px 0;color:#2c3e50;font-size:1.1rem}
+        .info-card .info-item strong{color:#6f42c1;font-weight:600}
+        .info-card .info-item span{color:#2c3e50}
+        .info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:15px;margin-bottom:20px}
+        .stat-card{background:white;padding:20px;border-radius:12px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.15);transition:transform 0.2s ease}
+        .stat-card:hover{transform:translateY(-5px)}
+        .stat-card .label{color:#7f8c8d;font-weight:bold;margin-bottom:8px}
+        .stat-card .value{font-size:1.8rem;color:#6f42c1;font-weight:bold}
+        .table-card{background:white;border-radius:12px;overflow:hidden;box-shadow:0 4px 12px rgba(0,0,0,0.15);margin-bottom:30px}
+        .table-header{background:#6f42c1;color:white;padding:20px;font-size:1.2rem;font-weight:bold}
+        table{width:100%;border-collapse:collapse;margin:0}
+        th{background:#f8f9fa;color:#2c3e50;padding:15px;text-align:left;font-weight:600;border-bottom:2px solid #e9ecef}
+        td{padding:12px 15px;border-bottom:1px solid #e9ecef}
+        tr:nth-child(even){background:#f8f9fa}
+        tr:hover{background:#e9ecef}
+        .empty-state{text-align:center;color:#7f8c8d;font-style:italic;padding:30px}
+        .back-card{background:white;padding:20px;border-radius:12px;text-align:center;box-shadow:0 4px 12px rgba(0,0,0,0.15)}
+        .back-link{color:#6f42c1;text-decoration:none;font-weight:500;transition:color 0.2s ease}
+        .back-link:hover{color:#5a2d91}
+        @media (max-width: 768px){.info-grid{grid-template-columns:1fr}table{font-size:14px}th,td{padding:10px 8px}.header h1{font-size:1.5rem}}
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📘 Detail Kelas</h1>
-
-        <div class="info">
-            <p><strong>Nama Kelas:</strong> <span th:text="${kelas.nama}">-</span></p>
-            <p><strong>Mata Kuliah:</strong> <span th:text="${kelas.matakuliah.nama}">-</span></p>
-            <p><strong>Dosen:</strong> <span th:text="${kelas.dosen.nama}">-</span></p>
-            <p><strong>Total Mahasiswa:</strong> <span th:text="${#lists.size(peserta)}">0</span></p>
+        <!-- Header -->
+        <div class="header">
+            <h1>📘 Detail Kelas</h1>
+            <p>Informasi lengkap kelas dan daftar peserta</p>
+        </div>
+        
+        <!-- Class Info Card -->
+        <div class="info-card">
+            <div class="info-item">
+                <strong>📚 Nama Kelas:</strong> <span th:text="${kelas.nama}">-</span>
+            </div>
+            <div class="info-item">
+                <strong>📖 Mata Kuliah:</strong> <span th:text="${kelas.matakuliah.nama}">-</span>
+            </div>
+            <div class="info-item">
+                <strong>👨‍🏫 Dosen:</strong> <span th:text="${kelas.dosen.nama}">-</span>
+            </div>
         </div>
 
-        <h3>👥 Daftar Mahasiswa</h3>
-        <table>
-            <thead>
-                <tr>
-                    <th>NIM</th>
-                    <th>Nama</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="km : ${peserta}">
-                    <td th:text="${km.mahasiswa.nim}">-</td>
-                    <td th:text="${km.mahasiswa.nama}">-</td>
-                </tr>
-                <tr th:if="${#lists.isEmpty(peserta)}">
-                    <td colspan="2" class="empty-state">Belum ada mahasiswa yang terdaftar</td>
-                </tr>
-            </tbody>
-        </table>
+        <!-- Stats -->
+        <div class="info-grid">
+            <div class="stat-card">
+                <div class="label">👥 Total Mahasiswa</div>
+                <div class="value" th:text="${#lists.size(peserta)}">0</div>
+            </div>
+            <div class="stat-card">
+                <div class="label">📊 Status Kelas</div>
+                <div class="value" th:text="${#lists.size(peserta) > 0 ? 'Aktif' : 'Kosong'}">-</div>
+            </div>
+        </div>
+
+        <!-- Students Table Card -->
+        <div class="table-card">
+            <div class="table-header">
+                👥 Daftar Mahasiswa
+            </div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>NIM</th>
+                        <th>Nama Mahasiswa</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="km : ${peserta}">
+                        <td th:text="${km.mahasiswa.nim}">123456789</td>
+                        <td th:text="${km.mahasiswa.nama}">Nama Mahasiswa</td>
+                    </tr>
+                    <tr th:if="${#lists.isEmpty(peserta)}">
+                        <td colspan="2" class="empty-state">Belum ada mahasiswa yang terdaftar di kelas ini</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Back Card -->
+        <div class="back-card">
+            <a href="/admin/kelas" class="back-link">← Kembali ke Daftar Kelas</a>
+        </div>
     </div>
 </body>
 </html>

@@ -34,6 +34,15 @@
             <label>Password</label>
             <input type="password" th:field="*{user.password}" placeholder="Password" required />
 
+            <label>Prodi</label>
+            <select th:field="*{prodi.id}">
+                <option value="" disabled selected>-- Pilih Prodi --</option>
+                <option th:each="p : ${prodiList}" 
+                        th:value="${p.id}" 
+                        th:text="${p.nama}"></option>
+            </select>
+
+
             <button type="submit">💾 Simpan</button>
         </form>
     </div>

@@ -2,7 +2,10 @@ package com.satuhati.satuhatis.controller;
 
 import com.satuhati.satuhatis.model.Dosen;
 import com.satuhati.satuhatis.model.Kelas;
+import com.satuhati.satuhatis.repository.FakultasRepository;
 import com.satuhati.satuhatis.repository.KelasRepository;
+import com.satuhati.satuhatis.repository.MataKuliahRepository;
+import com.satuhati.satuhatis.repository.ProdiRepository;
 import com.satuhati.satuhatis.service.DosenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,6 +23,9 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DosenController {
 
+    private final FakultasRepository fakultasRepository;
+    private final ProdiRepository prodiRepository;
+    private final MataKuliahRepository matakuliahRepository;
     private final DosenService dosenService;
     private final KelasRepository kelasRepository;
 
@@ -41,9 +47,44 @@ public class DosenController {
     }
 
     @GetMapping("/kelas")
-    public String semuaKelas(Model model) {
+    public String semuaKelas(@RequestParam(required = false) Long fakultasId,
+                            @RequestParam(required = false) Long prodiId,
+                            @RequestParam(required = false) Long matakuliahId,
+                            Model model) {
+
         List<Kelas> semuaKelas = kelasRepository.findAll();
+
+        // Filtering
+        if (matakuliahId != null) {
+            semuaKelas = semuaKelas.stream()
+                .filter(k -> k.getMatakuliah().getId().equals(matakuliahId))
+                .toList();
+        }
+
+        if (prodiId != null) {
+            semuaKelas = semuaKelas.stream()
+                .filter(k -> k.getMatakuliah().getProdiList().stream()
+                    .anyMatch(p -> p.getId().equals(prodiId)))
+                .toList();
+        }
+
+        if (fakultasId != null) {
+            semuaKelas = semuaKelas.stream()
+                .filter(k -> k.getMatakuliah().getProdiList().stream()
+                    .anyMatch(p -> p.getFakultas() != null && p.getFakultas().getId().equals(fakultasId)))
+                .toList();
+        }
+
         model.addAttribute("semuaKelas", semuaKelas);
+        model.addAttribute("fakultasList", fakultasRepository.findAll());
+        model.addAttribute("prodiList", fakultasId != null ?
+            prodiRepository.findByFakultas_Id(fakultasId) : List.of());
+        model.addAttribute("matakuliahList", matakuliahRepository.findAll());
+
+        model.addAttribute("selectedFakultasId", fakultasId);
+        model.addAttribute("selectedProdiId", prodiId);
+        model.addAttribute("selectedMatkulId", matakuliahId);
+
         return "dosen/kelas-semua";
     }
 

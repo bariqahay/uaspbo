@@ -124,37 +124,36 @@
 </head>
 <body>
     <div class="container">
-        <h1>📚 Semua Kelas</h1>
+    <h1>📚 Semua Kelas</h1>
 
-        <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
-        <div th:if="${error}" class="alert alert-error" th:text="${error}"></div>
+    <form method="get" th:action="@{/dosen/kelas}" style="margin-bottom: 20px;">
+        <label for="fakultas">Fakultas:</label>
+        <select name="fakultasId" id="fakultas" onchange="this.form.submit()">
+            <option value="">-- Semua Fakultas --</option>
+            <option th:each="f : ${fakultasList}"
+                    th:value="${f.id}"
+                    th:selected="${f.id == selectedFakultasId}"
+                    th:text="${f.nama}">Fakultas</option>
+        </select>
 
-        <table>
-            <thead>
-                <tr>
-                    <th>Nama Kelas</th>
-                    <th>Mata Kuliah</th>
-                    <th>Dosen</th>
-                    <th>Jumlah Mahasiswa</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="kelas : ${semuaKelas}">
-                    <td th:text="${kelas.nama}">Kelas A</td>
-                    <td th:text="${kelas.matakuliah.nama}">Matkul</td>
-                    <td th:text="${kelas.dosen != null ? kelas.dosen.nama : 'Belum ada'}">-</td>
-                    <td th:text="${#lists.size(kelas.kelasMahasiswaList)}">0</td>
-                    <td>
-                        <form th:if="${kelas.dosen == null}" th:action="@{/dosen/daftar-pengajar}" method="post" style="margin: 0;">
-                            <input type="hidden" name="kelasId" th:value="${kelas.id}" />
-                            <button class="btn" type="submit">Daftar</button>
-                        </form>
-                        <span th:if="${kelas.dosen != null}" class="status-taken">Sudah ada pengajar</span>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+        <label for="prodi">Prodi:</label>
+        <select name="prodiId" id="prodi" onchange="this.form.submit()">
+            <option value="">-- Semua Prodi --</option>
+            <option th:each="p : ${prodiList}"
+                    th:value="${p.id}"
+                    th:selected="${p.id == selectedProdiId}"
+                    th:text="${p.nama}">Prodi</option>
+        </select>
+
+        <label for="matakuliah">Mata Kuliah:</label>
+        <select name="matakuliahId" id="matakuliah" onchange="this.form.submit()">
+            <option value="">-- Semua Matkul --</option>
+            <option th:each="m : ${matakuliahList}"
+                    th:value="${m.id}"
+                    th:selected="${m.id == selectedMatkulId}"
+                    th:text="${m.nama}">Matkul</option>
+        </select>
+    </form>
     </div>
 </body>
 </html>

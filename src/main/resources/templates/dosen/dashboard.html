@@ -62,8 +62,8 @@
             </thead>
             <tbody>
             <tr th:each="kelas : ${kelasDiampu}">
-                <td th:text="${kelas?.nama}">Kelas A</td>
-                <td th:text="${kelas?.matakuliah?.nama}">Matkul</td>
+                <td th:text="${kelas.namaKelas}">Kelas A</td>
+                <td th:text="${kelas.matakuliah?.nama}">Matkul</td>
                 <td>
                     <a th:href="@{'/dosen/kelas/' + ${kelas.id}}" class="btn">Detail</a>
                 </td>
@@ -84,7 +84,7 @@
                 <option value="" disabled selected>-- Pilih Kelas --</option>
                 <option th:each="kelas : ${kelasKosong}"
                         th:value="${kelas.id}"
-                        th:text="${kelas.nama + ' - ' + kelas.matakuliah.nama}">
+                        th:text="${kelas.namaKelas + ' - ' + kelas.matakuliah.nama}">
                 </option>
             </select>
             <button type="submit" class="btn">Daftar</button>

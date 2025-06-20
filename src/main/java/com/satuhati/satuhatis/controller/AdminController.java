@@ -18,6 +18,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AdminController {
 
+    private final ProdiRepository prodiRepository;
+    private final FakultasRepository fakultasRepository;
     private final KelasRepository kelasRepository;
     private final DosenRepository dosenRepository;
     private final MahasiswaRepository mahasiswaRepository;
@@ -43,6 +45,8 @@ public class AdminController {
     public String listKelas(Model model) {
         List<Kelas> kelasList = kelasRepository.findAll();
         model.addAttribute("kelasList", kelasList);
+        model.addAttribute("fakultasList", fakultasRepository.findAll());
+        model.addAttribute("prodiList", prodiRepository.findAll());
         return "admin/kelas-list";
     }
 
@@ -155,6 +159,7 @@ public class AdminController {
     @GetMapping("/dosen/tambah")
     public String formTambahDosen(Model model) {
         model.addAttribute("dosen", new Dosen());
+        model.addAttribute("prodiList", prodiRepository.findAll());
         return "admin/dosen-form";
     }
 
@@ -168,8 +173,49 @@ public class AdminController {
     public String editDosen(@PathVariable Long id, Model model) {
         Dosen dosen = dosenRepository.findById(id).orElseThrow();
         model.addAttribute("dosen", dosen);
+        model.addAttribute("prodiList", prodiRepository.findAll());
         return "admin/dosen-form";
     }
+
+    @GetMapping("/kelas/daftar")
+    public String daftarKelasUntukPeserta(Model model) {
+        List<Kelas> kelasList = kelasRepository.findAll();
+        model.addAttribute("kelasList", kelasList);
+        return "admin/kelas-daftar-peserta";
+    }
+
+    @GetMapping("/kelas/filter")
+    public String filterKelas(
+        @RequestParam(required = false) Long fakultasId,
+        @RequestParam(required = false) Long prodiId,
+        Model model
+    ) {
+        List<Kelas> kelasList;
+        List<Prodi> prodiList;
+
+        // Ambil semua prodi berdasarkan fakultas (kalau fakultas dipilih)
+        if (fakultasId != null) {
+            prodiList = prodiRepository.findByFakultas_Id(fakultasId);
+        } else {
+            prodiList = prodiRepository.findAll();
+        }
+
+        // Ambil semua kelas berdasarkan prodi (kalau prodi dipilih)
+        if (prodiId != null) {
+            kelasList = kelasRepository.findByMatakuliah_ProdiList_Id(prodiId);
+        } else {
+            kelasList = kelasRepository.findAll();
+        }
+
+        model.addAttribute("kelasList", kelasList);
+        model.addAttribute("prodiList", prodiList);
+        model.addAttribute("fakultasList", fakultasRepository.findAll());
+        model.addAttribute("selectedFakultasId", fakultasId);
+        model.addAttribute("selectedProdiId", prodiId);
+
+        return "admin/kelas-list";
+    }
+
 
     @GetMapping("/dosen/hapus/{id}")
     public String hapusDosen(@PathVariable Long id) {
@@ -194,6 +240,7 @@ public class AdminController {
         Mahasiswa mahasiswa = new Mahasiswa();
         mahasiswa.setUser(new User()); // buat init field user
         model.addAttribute("mahasiswa", mahasiswa);
+        model.addAttribute("prodiList", prodiRepository.findAll());
         return "admin/mahasiswa-form";
     }
 
@@ -211,6 +258,7 @@ public class AdminController {
     public String formEditMahasiswa(@PathVariable Long id, Model model) {
         Mahasiswa mahasiswa = mahasiswaRepository.findById(id).orElseThrow();
         model.addAttribute("mahasiswa", mahasiswa);
+        model.addAttribute("prodiList", prodiRepository.findAll());
         return "admin/mahasiswa-form";
     }
 

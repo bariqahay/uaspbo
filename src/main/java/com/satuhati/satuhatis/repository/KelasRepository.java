@@ -14,5 +14,8 @@ public interface KelasRepository extends JpaRepository<Kelas, Long> {
 
     List<Kelas> findByDosen_Id(Long dosenId); // ⬅️ Tambahin ini
 
+    List<Kelas> findByMatakuliah_ProdiList_Id(Long prodiId);
+    List<Kelas> findByMatakuliah_Id(Long matakuliahId);
+
     boolean existsByNamaKelas(String namaKelas);
 }

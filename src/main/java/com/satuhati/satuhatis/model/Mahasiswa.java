@@ -11,6 +11,10 @@ import lombok.*;
 @Builder
 public class Mahasiswa {
 
+    @ManyToOne
+    @JoinColumn(name = "prodi_id")
+    private Prodi prodi;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

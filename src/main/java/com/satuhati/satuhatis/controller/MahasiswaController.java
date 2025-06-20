@@ -3,9 +3,13 @@ package com.satuhati.satuhatis.controller;
 import com.satuhati.satuhatis.model.Kelas;
 import com.satuhati.satuhatis.model.KelasMahasiswa;
 import com.satuhati.satuhatis.model.Mahasiswa;
+import com.satuhati.satuhatis.repository.FakultasRepository;
+import com.satuhati.satuhatis.repository.ProdiRepository;
+import com.satuhati.satuhatis.repository.MataKuliahRepository;
 import com.satuhati.satuhatis.repository.KelasMahasiswaRepository;
 import com.satuhati.satuhatis.repository.KelasRepository;
 import com.satuhati.satuhatis.service.MahasiswaService;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.User;
@@ -24,21 +28,58 @@ public class MahasiswaController {
     private final MahasiswaService mahasiswaService;
     private final KelasRepository kelasRepository;
     private final KelasMahasiswaRepository kelasMahasiswaRepository;
+    private final FakultasRepository fakultasRepository;
+    private final ProdiRepository prodiRepository;
+    private final MataKuliahRepository matakuliahRepository;
 
-    // Dashboard Mahasiswa
     @GetMapping("/dashboard")
-    public String dashboard(@AuthenticationPrincipal User user, Model model) {
+    public String dashboard(@AuthenticationPrincipal User user,
+                            @RequestParam(required = false) Long fakultasId,
+                            @RequestParam(required = false) Long prodiId,
+                            @RequestParam(required = false) Long matakuliahId,
+                            Model model) {
+
         Mahasiswa mhs = mahasiswaService.findByUsername(user.getUsername()).orElseThrow();
         List<KelasMahasiswa> kelasTerdaftar = kelasMahasiswaRepository.findByMahasiswa(mhs);
+
         List<Kelas> semuaKelas = kelasRepository.findAll();
+
+        if (matakuliahId != null) {
+            semuaKelas = semuaKelas.stream()
+                    .filter(k -> k.getMatakuliah().getId().equals(matakuliahId))
+                    .toList();
+        }
+
+        if (prodiId != null) {
+            semuaKelas = semuaKelas.stream()
+                    .filter(k -> k.getMatakuliah().getProdiList().stream()
+                            .anyMatch(p -> p.getId().equals(prodiId)))
+                    .toList();
+        }
+
+        if (fakultasId != null) {
+            semuaKelas = semuaKelas.stream()
+                    .filter(k -> k.getMatakuliah().getProdiList().stream()
+                            .anyMatch(p -> p.getFakultas() != null && p.getFakultas().getId().equals(fakultasId)))
+                    .toList();
+        }
 
         model.addAttribute("mahasiswa", mhs);
         model.addAttribute("kelasTerdaftar", kelasTerdaftar);
-        model.addAttribute("semuaKelas", semuaKelas); // Buat daftar peluang ikut kelas
+        model.addAttribute("semuaKelas", semuaKelas);
+
+        model.addAttribute("fakultasList", fakultasRepository.findAll());
+        model.addAttribute("prodiList", fakultasId != null ?
+                prodiRepository.findByFakultas_Id(fakultasId) : List.of());
+        model.addAttribute("matakuliahList", matakuliahRepository.findAll());
+
+        model.addAttribute("selectedFakultasId", fakultasId);
+        model.addAttribute("selectedProdiId", prodiId);
+        model.addAttribute("selectedMatkulId", matakuliahId);
+
         return "mahasiswa/dashboard";
     }
 
-    // POST: Mahasiswa daftar ke kelas
     @PostMapping("/daftar-kelas")
     public String daftarKelas(@AuthenticationPrincipal User user,
                               @RequestParam Long kelasId,
@@ -63,7 +104,6 @@ public class MahasiswaController {
         return "redirect:/mahasiswa/dashboard";
     }
 
-    // Detail kelas yang diikuti mahasiswa
     @GetMapping("/kelas/{id}")
     public String detailKelas(@PathVariable Long id, Model model) {
         Kelas kelas = kelasRepository.findById(id).orElseThrow();
@@ -72,4 +112,3 @@ public class MahasiswaController {
         return "mahasiswa/kelas-detail";
     }
 }
-

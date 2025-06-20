@@ -15,6 +15,10 @@ public class Dosen {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @ManyToOne
+    @JoinColumn(name = "prodi_id")
+    private Prodi prodi;
+
     @Column(nullable = false, unique = true, length = 50)
     private String nip;
 

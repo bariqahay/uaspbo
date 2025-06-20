@@ -3,6 +3,8 @@ package com.satuhati.satuhatis.model;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.util.List;
+
 @Entity
 @Table(name = "matakuliah")
 @Data
@@ -23,4 +25,7 @@ public class MataKuliah {
 
     @Column(name = "sks", nullable = false)
     private Integer sks;
+
+    @ManyToMany(mappedBy = "mataKuliahList")
+    private List<Prodi> prodiList;
 }

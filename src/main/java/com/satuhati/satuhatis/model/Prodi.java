@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "prodi")
 @Data
@@ -24,6 +26,7 @@ public class Prodi {
     @JoinColumn(name = "fakultas_id")
     private Fakultas fakultas;
 
+    @JsonIgnore
     @ManyToMany
     @JoinTable(
         name = "prodi_matakuliah",

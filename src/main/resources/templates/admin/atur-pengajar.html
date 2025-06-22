@@ -103,24 +103,106 @@
         <div th:if="${success}" class="alert alert-success" th:text="${success}"></div>
 
         <form method="post" th:action="@{/admin/kelas/atur-pengajar}">
-            <label>Pilih Kelas:</label>
-            <select name="kelasId" required>
-                <option th:each="k : ${kelasTanpaDosen}" 
-                        th:value="${k.id}" 
-                        th:text="${k.namaKelas}">
-                </option>
+            <label>Pilih Fakultas:</label>
+            <select id="fakultasSelect" required>
+                <option disabled selected value="">-- Pilih Fakultas --</option>
+                <option th:each="f : ${fakultasList}" th:value="${f.id}" th:text="${f.nama}"></option>
             </select>
 
+            <label>Pilih Prodi:</label>
+            <select id="prodiSelect" required disabled>
+                <option disabled selected value="">-- Pilih Prodi --</option>
+            </select>
+
+            <label>Pilih Kelas:</label>
+            <select id="kelasSelect" name="kelasId" required disabled>
+                <option disabled selected>-- Pilih Kelas --</option>
+            </select>
+
+
             <label>Pilih Dosen:</label>
-            <select name="dosenId" required>
-                <option th:each="d : ${dosenList}" 
-                        th:value="${d.id}" 
-                        th:text="${d.nama}">
-                </option>
+            <select id="dosenSelect" name="dosenId" required>
+                <option disabled selected value="">-- Pilih Dosen --</option>
             </select>
 
             <button type="submit">Assign Dosen</button>
         </form>
     </div>
+
+    <script>
+        const fakultasSelect = document.getElementById('fakultasSelect');
+        const prodiSelect = document.getElementById('prodiSelect');
+        const kelasSelect = document.getElementById('kelasSelect');
+        const dosenSelect = document.getElementById('dosenSelect');
+
+        const resetSelect = (selectElement, placeholderText) => {
+            selectElement.innerHTML = `<option disabled selected>${placeholderText}</option>`;
+            selectElement.disabled = true;
+        };
+
+        fakultasSelect.addEventListener('change', () => {
+            const fakultasId = fakultasSelect.value;
+
+            resetSelect(prodiSelect, 'Loading prodi...');
+            resetSelect(kelasSelect, '-- Pilih Kelas --');
+            resetSelect(dosenSelect, '-- Pilih Dosen --');
+
+            fetch(`/api/prodi/by-fakultas/${fakultasId}`)
+                .then(res => res.json())
+                .then(data => {
+                    resetSelect(prodiSelect, '-- Pilih Prodi --');
+                    data.forEach(p => {
+                        const option = document.createElement('option');
+                        option.value = p.id;
+                        option.text = p.nama;
+                        prodiSelect.appendChild(option);
+                    });
+                    prodiSelect.disabled = false;
+                })
+                .catch(() => resetSelect(prodiSelect, 'Gagal load Prodi'));
+        });
+
+        prodiSelect.addEventListener('change', () => {
+            const prodiId = prodiSelect.value;
+
+            resetSelect(kelasSelect, 'Loading kelas...');
+            resetSelect(dosenSelect, '-- Pilih Dosen --');
+
+            fetch(`/api/kelas/by-prodi/${prodiId}`)
+                .then(res => res.json())
+                .then(data => {
+                    resetSelect(kelasSelect, '-- Pilih Kelas --');
+                    data.forEach(k => {
+                        const option = document.createElement('option');
+                        option.value = k.id;
+                        option.text = k.namaKelas;
+                        kelasSelect.appendChild(option);
+                    });
+                    kelasSelect.disabled = false;
+                })
+                .catch(() => resetSelect(kelasSelect, 'Gagal load Kelas'));
+        });
+
+        kelasSelect.addEventListener('change', () => {
+            const kelasId = kelasSelect.value;
+            resetSelect(dosenSelect, 'Loading dosen...');
+
+            fetch(`/admin/kelas/${kelasId}/dosen-available`)
+                .then(res => res.json())
+                .then(data => {
+                    resetSelect(dosenSelect, '-- Pilih Dosen --');
+                    data.forEach(d => {
+                        const option = document.createElement('option');
+                        option.value = d.id;
+                        option.text = d.nama;
+                        dosenSelect.appendChild(option);
+                    });
+                    dosenSelect.disabled = false;
+                })
+                .catch(() => resetSelect(dosenSelect, 'Gagal load Dosen'));
+        });
+    </script>
+
+
 </body>
 </html>

@@ -5,6 +5,10 @@ import lombok.*;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 @Entity
 @Table(name = "kelas")
 @Getter
@@ -20,8 +24,18 @@ public class Kelas {
 
     @ManyToOne
     @JoinColumn(name = "matakuliah_id", nullable = false)
+    @JsonIgnoreProperties({"dosenList", "kelasList", "prodi"}) // pilih yg bikin loop
     private MataKuliah matakuliah;
 
+    @ManyToOne
+    @JoinColumn(name = "fakultas_id")
+    private Fakultas fakultas;
+
+    @ManyToOne
+    @JoinColumn(name = "prodi_id")
+    private Prodi prodi;
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "dosen_id")
     private Dosen dosen;
@@ -31,6 +45,8 @@ public class Kelas {
 
     @Column(nullable = false)
     private int kapasitas;
+
+    private String ruangan;
 
     // ✅ Tambahin relasi ke peserta (kelas_mahasiswa)
     @OneToMany(mappedBy = "kelas", cascade = CascadeType.ALL, orphanRemoval = true)

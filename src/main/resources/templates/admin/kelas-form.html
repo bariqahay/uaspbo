@@ -12,7 +12,7 @@
             font-family: Arial, sans-serif;
             margin: 0;
         }
-        
+
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -21,21 +21,21 @@
             border-radius: 15px;
             box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
-        
+
         h1 {
             color: #2c3e50;
             margin: 0 0 30px 0;
             text-align: center;
             font-size: 1.8rem;
         }
-        
+
         label {
             display: block;
             color: #2c3e50;
             margin: 15px 0 5px 0;
             font-weight: 500;
         }
-        
+
         input, select {
             width: 100%;
             padding: 12px;
@@ -45,12 +45,12 @@
             font-size: 16px;
             transition: border-color 0.2s ease;
         }
-        
+
         input:focus, select:focus {
             outline: none;
             border-color: #6f42c1;
         }
-        
+
         button {
             background: #6f42c1;
             color: white;
@@ -62,22 +62,22 @@
             margin: 20px 10px 20px 0;
             transition: background 0.2s ease;
         }
-        
+
         button:hover {
             background: #5a2d91;
         }
-        
+
         .back-link {
             color: #6f42c1;
             text-decoration: none;
             font-weight: 500;
             transition: color 0.2s ease;
         }
-        
+
         .back-link:hover {
             color: #5a2d91;
         }
-        
+
         @media (max-width: 768px) {
             .container {
                 margin: 0 10px;
@@ -87,38 +87,101 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1 th:text="${kelas.id == null} ? 'Tambah Kelas' : 'Edit Kelas'"></h1>
+<div class="container">
+    <h1 th:text="${kelas.id == null} ? 'Tambah Kelas' : 'Edit Kelas'"></h1>
 
-        <form th:action="@{/admin/kelas/simpan}" th:object="${kelas}" method="post">
-            <input type="hidden" th:field="*{id}" />
+    <form th:action="@{/admin/kelas/simpan}" th:object="${kelas}" method="post">
+        <input type="hidden" th:field="*{id}" />
 
-            <label>Nama Kelas:</label>
-            <input type="text" th:field="*{namaKelas}" required />
+        <label>Nama Kelas:</label>
+        <input type="text" th:field="*{namaKelas}" required />
 
-            <label>Mata Kuliah:</label>
-            <select th:field="*{matakuliah.id}">
-                <option value="" disabled selected>-- Pilih Matkul --</option>
-                <option th:each="mk : ${matakuliahList}"
-                        th:value="${mk.id}"
-                        th:text="${mk.nama}"
-                        th:selected="${mk.id == kelas.mataKuliah?.id}">
-                </option>
-            </select>
+        <label>Kapasitas:</label>
+        <input type="number" th:field="*{kapasitas}" min="1" required />
 
-            <label>Dosen Pengajar:</label>
-            <select th:field="*{dosen.id}">
-                <option value="" disabled selected>-- Pilih Dosen --</option>
-                <option th:each="d : ${dosenList}"
-                        th:value="${d.id}"
-                        th:text="${d.nama}"
-                        th:selected="${d.id == kelas.dosen?.id}">
-                </option>
-            </select>
+        <label>Ruangan:</label>
+        <input type="text" th:field="*{ruangan}" />
 
-            <button type="submit">Simpan</button>
-            <a href="/admin/kelas" class="back-link">← Kembali ke daftar kelas</a>
-        </form>
-    </div>
+        <label>Fakultas:</label>
+        <select id="fakultasSelect" th:field="*{fakultas.id}" required>
+            <option value="" disabled selected>-- Pilih Fakultas --</option>
+            <option th:each="f : ${fakultasList}"
+                    th:value="${f.id}"
+                    th:text="${f.nama}"></option>
+        </select>
+
+        <label>Program Studi:</label>
+        <select id="prodiSelect" th:field="*{prodi.id}" required>
+            <option value="" disabled selected>-- Pilih Prodi --</option>
+            <option th:each="p : ${prodiList}"
+                    th:value="${p.id}"
+                    th:text="${p.nama}"></option>
+        </select>
+
+        <label>Mata Kuliah:</label>
+        <select id="matkulSelect" th:field="*{matakuliah.id}" required>
+            <option value="" disabled selected>-- Pilih Matkul --</option>
+            <option th:each="mk : ${matakuliahList}"
+                    th:value="${mk.id}"
+                    th:text="${mk.nama}">
+            </option>
+        </select>
+
+        <button type="submit">Simpan</button>
+        <a href="/admin/kelas" class="back-link">← Kembali ke daftar kelas</a>
+    </form>
+</div>
+
+<script th:inline="javascript">
+    const fakultasSelect = document.getElementById("fakultasSelect");
+    const prodiSelect = document.getElementById("prodiSelect");
+    const matkulSelect = document.getElementById("matkulSelect");
+
+    const currentProdiId = /*[[${kelas.prodi?.id}]]*/ null;
+    const currentMatkulId = /*[[${kelas.matakuliah?.id}]]*/ null;
+
+    fakultasSelect.addEventListener("change", function () {
+        const fakultasId = this.value;
+        fetch("/api/prodi/by-fakultas/" + fakultasId)
+            .then(res => res.json())
+            .then(data => {
+                prodiSelect.innerHTML = '<option disabled selected>-- Pilih Prodi --</option>';
+                data.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = p.nama;
+                    if (p.id == currentProdiId) opt.selected = true;
+                    prodiSelect.appendChild(opt);
+                });
+                if (currentProdiId) prodiSelect.dispatchEvent(new Event("change"));
+            });
+    });
+
+    prodiSelect.addEventListener("change", function () {
+        const prodiId = this.value;
+        fetch("/matakuliah/api/matakuliah/by-prodi/" + prodiId)
+            .then(res => res.json())
+            .then(data => {
+                matkulSelect.innerHTML = '<option disabled selected>-- Pilih Matkul --</option>';
+                data.forEach(mk => {
+                    const opt = document.createElement('option');
+                    opt.value = mk.id;
+                    opt.textContent = mk.nama;
+                    if (mk.id == currentMatkulId) opt.selected = true;
+                    matkulSelect.appendChild(opt);
+                });
+            });
+    });
+
+    // Saat page load (edit mode)
+    window.addEventListener("DOMContentLoaded", () => {
+        const fakultasId = fakultasSelect.value;
+        const prodiId = prodiSelect.value;
+
+        if (fakultasId) fakultasSelect.dispatchEvent(new Event("change"));
+        if (prodiId) prodiSelect.dispatchEvent(new Event("change"));
+    });
+</script>
+
 </body>
 </html>

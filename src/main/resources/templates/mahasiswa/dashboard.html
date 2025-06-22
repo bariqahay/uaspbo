@@ -70,7 +70,8 @@
         </div>
     </form>
 
-    <h3>📚 Daftar Semua Kelas (Peluang Ikut)</h3>
+    <!-- Bagian Tersedia (Bisa Diikuti) -->
+    <h3>📚 Kelas yang Bisa Diikuti</h3>
     <table>
         <thead>
         <tr>
@@ -81,24 +82,41 @@
         </tr>
         </thead>
         <tbody>
-        <tr th:each="k : ${semuaKelas}">
+        <tr th:each="k : ${kelasTersedia}">
             <td th:text="${k.namaKelas}">-</td>
             <td th:text="${k.matakuliah?.nama}">-</td>
             <td th:text="${k.dosen?.nama ?: 'Belum Ada'}">-</td>
             <td>
-                <div th:if="${#lists.contains(k.peserta.?[id], mahasiswa.id)}">
-                    <span class="registered">✅ Sudah terdaftar</span>
-                </div>
-                <div th:unless="${#lists.contains(k.peserta.?[id], mahasiswa.id)}">
-                    <form th:action="@{/mahasiswa/daftar-kelas}" method="post">
-                        <input type="hidden" name="kelasId" th:value="${k.id}" />
-                        <button type="submit">📝 Daftar</button>
-                    </form>
-                </div>
+                <form th:action="@{/mahasiswa/daftar-kelas}" method="post">
+                    <input type="hidden" name="kelasId" th:value="${k.id}" />
+                    <button type="submit">📝 Daftar</button>
+                </form>
             </td>
         </tr>
-        <tr th:if="${semuaKelas.size() == 0}">
-            <td colspan="4" class="empty-state">Belum ada kelas tersedia.</td>
+        <tr th:if="${kelasTersedia.size() == 0}">
+            <td colspan="4" class="empty-state">Tidak ada kelas yang tersedia untuk diikuti.</td>
+        </tr>
+        </tbody>
+    </table>
+
+    <!-- Bagian Sudah Diikuti -->
+    <h3 style="margin-top:40px">✅ Kelas yang Sudah Diikuti</h3>
+    <table>
+        <thead>
+        <tr>
+            <th>Nama Kelas</th>
+            <th>Mata Kuliah</th>
+            <th>Dosen</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="km : ${kelasTerdaftar}">
+            <td th:text="${km.kelas.namaKelas}">-</td>
+            <td th:text="${km.kelas.matakuliah?.nama}">-</td>
+            <td th:text="${km.kelas.dosen?.nama ?: 'Belum Ada'}">-</td>
+        </tr>
+        <tr th:if="${kelasTerdaftar.size() == 0}">
+            <td colspan="3" class="empty-state">Kamu belum mendaftar di kelas mana pun.</td>
         </tr>
         </tbody>
     </table>

@@ -8,6 +8,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Optional;
+import java.util.List;
 
 @Controller
 @RequiredArgsConstructor
@@ -56,5 +57,11 @@ public class MataKuliahController {
     public String deleteMatkul(@PathVariable Long id) {
         mataKuliahService.deleteById(id);
         return "redirect:/matakuliah";
+    }
+
+    @GetMapping("/api/matakuliah/by-prodi/{prodiId}")
+    @ResponseBody
+    public List<MataKuliah> getByProdi(@PathVariable Long prodiId) {
+        return mataKuliahService.findByProdiId(prodiId);
     }
 }

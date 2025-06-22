@@ -36,8 +36,11 @@ public class DosenController {
 
         Dosen dosen = dosenOpt.get();
         List<Kelas> kelasDiampu = kelasRepository.findByDosen(dosen); // ini ambil dari DB
-        List<Kelas> kelasKosong = kelasRepository.findByDosenIsNull();
-
+        List<Kelas> kelasKosong = kelasRepository.findByDosenIsNull().stream()
+            .filter(k -> k.getMatakuliah() != null &&
+                        k.getMatakuliah().getProdi() != null &&
+                        k.getMatakuliah().getProdi().equals(dosen.getProdi())) // assuming Dosen punya Prodi
+            .toList();
         model.addAttribute("dosen", dosen);
         model.addAttribute("kelasDiampu", kelasDiampu); // <- ini penting
         model.addAttribute("jumlahKelas", kelasDiampu.size());
@@ -54,31 +57,35 @@ public class DosenController {
 
         List<Kelas> semuaKelas = kelasRepository.findAll();
 
-        // Filtering
+        // Filtering manual
         if (matakuliahId != null) {
             semuaKelas = semuaKelas.stream()
-                .filter(k -> k.getMatakuliah().getId().equals(matakuliahId))
+                .filter(k -> k.getMatakuliah() != null && k.getMatakuliah().getId().equals(matakuliahId))
                 .toList();
         }
 
         if (prodiId != null) {
             semuaKelas = semuaKelas.stream()
-                .filter(k -> k.getMatakuliah().getProdiList().stream()
-                    .anyMatch(p -> p.getId().equals(prodiId)))
+                .filter(k -> {
+                    var prodi = k.getMatakuliah() != null ? k.getMatakuliah().getProdi() : null;
+                    return prodi != null && prodi.getId().equals(prodiId);
+                })
                 .toList();
         }
 
         if (fakultasId != null) {
             semuaKelas = semuaKelas.stream()
-                .filter(k -> k.getMatakuliah().getProdiList().stream()
-                    .anyMatch(p -> p.getFakultas() != null && p.getFakultas().getId().equals(fakultasId)))
+                .filter(k -> {
+                    var prodi = k.getMatakuliah() != null ? k.getMatakuliah().getProdi() : null;
+                    var fakultas = prodi != null ? prodi.getFakultas() : null;
+                    return fakultas != null && fakultas.getId().equals(fakultasId);
+                })
                 .toList();
         }
 
-        model.addAttribute("semuaKelas", semuaKelas);
+        model.addAttribute("kelasList", semuaKelas);
         model.addAttribute("fakultasList", fakultasRepository.findAll());
-        model.addAttribute("prodiList", fakultasId != null ?
-            prodiRepository.findByFakultas_Id(fakultasId) : List.of());
+        model.addAttribute("prodiList", fakultasId != null ? prodiRepository.findByFakultas_Id(fakultasId) : prodiRepository.findAll());
         model.addAttribute("matakuliahList", matakuliahRepository.findAll());
 
         model.addAttribute("selectedFakultasId", fakultasId);
@@ -88,13 +95,21 @@ public class DosenController {
         return "dosen/kelas-semua";
     }
 
+
     @GetMapping("/kelas/{id}")
-    public String detailKelas(@PathVariable Long id, Model model) {
+    public String detailKelas(@PathVariable Long id, @AuthenticationPrincipal User user, Model model) {
+        Dosen dosen = dosenService.findByUsername(user.getUsername()).orElseThrow();
         Kelas kelas = kelasRepository.findById(id).orElseThrow();
+
+        if (!kelas.getDosen().equals(dosen)) {
+            return "redirect:/dosen/dashboard"; // atau kasih error message unauthorized
+        }
+
         model.addAttribute("kelas", kelas);
-        model.addAttribute("peserta", kelas.getPeserta()); // Asumsikan ada getter peserta
+        model.addAttribute("peserta", kelas.getPeserta());
         return "dosen/kelas-detail";
     }
+
 
 
     @PostMapping("/daftar-pengajar")

@@ -5,6 +5,8 @@ import lombok.*;
 
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "matakuliah")
 @Data
@@ -26,6 +28,24 @@ public class MataKuliah {
     @Column(name = "sks", nullable = false)
     private Integer sks;
 
-    @ManyToMany(mappedBy = "mataKuliahList")
-    private List<Prodi> prodiList;
+    @ManyToMany(mappedBy = "matakuliahList")
+    @JsonIgnore
+    private List<Dosen> dosenList;
+
+    @OneToMany(mappedBy = "matakuliah")
+    @JsonIgnore
+    private List<Kelas> kelasList;
+
+    @ManyToOne
+    @JoinColumn(name = "prodi_id", nullable = false)
+    private Prodi prodi;
+
+    // ✅ Custom constructor for seeding or manual instantiation (no dosenList & kelasList)
+    public MataKuliah(Long id, String kode, String nama, Integer sks, Prodi prodi) {
+        this.id = id;
+        this.kode = kode;
+        this.nama = nama;
+        this.sks = sks;
+        this.prodi = prodi;
+    }
 }

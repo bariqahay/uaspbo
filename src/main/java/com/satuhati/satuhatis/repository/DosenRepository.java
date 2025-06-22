@@ -1,5 +1,5 @@
 package com.satuhati.satuhatis.repository;
-
+import java.util.List;
 import com.satuhati.satuhatis.model.Dosen;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -14,4 +14,6 @@ public interface DosenRepository extends JpaRepository<Dosen, Long> {
     Optional<Dosen> findByUser_Username(String username);
 
     boolean existsByNip(String nip);
+    List<Dosen> findByProdi_Id(Long prodiId);
+    List<Dosen> findByMatakuliahList_Id(Long matkulId);
 }

@@ -53,7 +53,7 @@
                     <option th:each="f : ${fakultasList}" 
                             th:value="${f.id}" 
                             th:text="${f.nama}"
-                            th:selected="${f.id == param.fakultasId}"></option>
+                            th:selected="${f.id == selectedFakultasId}"></option>
                 </select>
 
                 <label>Prodi:</label>
@@ -62,7 +62,7 @@
                     <option th:each="p : ${prodiList}" 
                             th:value="${p.id}" 
                             th:text="${p.nama}"
-                            th:selected="${p.id == param.prodiId}"></option>
+                            th:selected="${p.id == selectedProdiId}"></option>
                 </select>
 
                 <button type="submit" class="btn btn-info">🔍 Filter</button>
@@ -81,6 +81,8 @@
                         <th>Nama Kelas</th>
                         <th>Mata Kuliah</th>
                         <th>Dosen</th>
+                        <th>Prodi</th>
+                        <th>Fakultas</th>
                         <th>Aksi</th>
                     </tr>
                 </thead>
@@ -89,6 +91,8 @@
                         <td th:text="${kelas.namaKelas}">Nama Kelas</td>
                         <td th:text="${kelas.matakuliah?.nama}">Nama Matkul</td>
                         <td th:text="${kelas.dosen?.nama}">Nama Dosen</td>
+                        <td th:text="${kelas.matakuliah?.prodi?.nama}">Prodi</td>
+                        <td th:text="${kelas.matakuliah?.prodi?.fakultas?.nama}">Fakultas</td>
                         <td>
                             <a th:href="@{/admin/kelas/{id}(id=${kelas.id})}" class="action-btn view-btn">👁️</a>
                             <a th:href="@{/admin/kelas/edit/{id}(id=${kelas.id})}" class="action-btn edit-btn">✏️</a>
@@ -97,7 +101,7 @@
                         </td>
                     </tr>
                     <tr th:if="${kelasList.size() == 0}">
-                        <td colspan="4" class="empty-state">Tidak ada kelas ditemukan.</td>
+                        <td colspan="6" class="empty-state">Tidak ada kelas ditemukan.</td>
                     </tr>
                 </tbody>
             </table>

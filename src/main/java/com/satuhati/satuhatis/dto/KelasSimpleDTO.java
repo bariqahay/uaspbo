@@ -2,12 +2,10 @@ package com.satuhati.satuhatis.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
-import lombok.NoArgsConstructor;
 
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-public class DosenDTO {
+public class KelasSimpleDTO {
     private Long id;
-    private String nama;
+    private String namaKelas;
 }

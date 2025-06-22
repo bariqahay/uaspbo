@@ -1,4 +1,7 @@
 package com.satuhati.satuhatis.model;
+import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.*;
 import lombok.*;
@@ -16,7 +19,7 @@ public class Dosen {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "prodi_id")
+    @JoinColumn(name = "prodi_id", nullable = false)
     private Prodi prodi;
 
     @Column(nullable = false, unique = true, length = 50)
@@ -25,8 +28,14 @@ public class Dosen {
     @Column(nullable = false, length = 100)
     private String nama;
 
-    @Column(nullable = false)
-    private String password;
+    @JsonIgnore
+    @ManyToMany
+    @JoinTable(
+        name = "dosen_matakuliah",
+        joinColumns = @JoinColumn(name = "dosen_id"),
+        inverseJoinColumns = @JoinColumn(name = "matakuliah_id")
+    )
+    private List<MataKuliah> matakuliahList;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id", nullable = false)

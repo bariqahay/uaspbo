@@ -92,7 +92,7 @@
 
         <!-- Back Card -->
         <div class="back-card">
-            <a href="/admin/kelas" class="back-link">← Kembali ke Daftar Kelas</a>
+            <a th:href="@{${#httpServletRequest.getHeader('referer')}}" class="back-link">← Kembali</a>
         </div>
     </div>
 </body>

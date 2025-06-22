@@ -154,6 +154,30 @@
                     th:text="${m.nama}">Matkul</option>
         </select>
     </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Nama Kelas</th>
+                <th>Matakuliah</th>
+                <th>Dosen</th>
+                <th>Prodi</th>
+                <th>Fakultas</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="kelas : ${kelasList}">
+                <td th:text="${kelas.namaKelas}">Nama Kelas</td>
+                <td th:text="${kelas.matakuliah?.nama}">Matakuliah</td>
+                <td th:text="${kelas.dosen?.nama}">Dosen</td>
+                <td th:text="${kelas.matakuliah?.prodi?.nama}">Prodi</td>
+                <td th:text="${kelas.matakuliah?.prodi?.fakultas?.nama}">Fakultas</td>
+            </tr>
+            <tr th:if="${kelasList.size() == 0}">
+                <td colspan="5">Tidak ada kelas ditemukan.</td>
+            </tr>
+        </tbody>
+    </table>
     </div>
 </body>
 </html>

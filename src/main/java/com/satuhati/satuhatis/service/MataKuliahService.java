@@ -24,6 +24,10 @@ public class MataKuliahService {
         return mataKuliahRepository.findById(id);
     }
 
+    public List<MataKuliah> findByProdiId(Long prodiId) {
+        return mataKuliahRepository.findByProdi_Id(prodiId); // ✅ sesuaikan
+    }
+
     public Optional<MataKuliah> findByKode(String kode) {
         return mataKuliahRepository.findByKode(kode);
     }

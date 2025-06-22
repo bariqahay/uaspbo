@@ -18,7 +18,9 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
-import java.util.List;
+import java.util.List; 
+import java.util.Set; 
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/mahasiswa")
@@ -39,39 +41,34 @@ public class MahasiswaController {
                             @RequestParam(required = false) Long matakuliahId,
                             Model model) {
 
-        Mahasiswa mhs = mahasiswaService.findByUsername(user.getUsername()).orElseThrow();
+        Mahasiswa mhs = mahasiswaService.findByUsername(user.getUsername())
+                .orElseThrow();
+
+        // Ambil kelas yang sudah diikuti mahasiswa ini
         List<KelasMahasiswa> kelasTerdaftar = kelasMahasiswaRepository.findByMahasiswa(mhs);
+        Set<Long> kelasTerdaftarIds = kelasTerdaftar.stream()
+                .map(km -> km.getKelas().getId())
+                .collect(Collectors.toSet());
 
-        List<Kelas> semuaKelas = kelasRepository.findAll();
+        // Ambil semua kelas sesuai filter
+        List<Kelas> semuaKelas = kelasRepository.findFilteredKelas(fakultasId, prodiId, matakuliahId);
 
-        if (matakuliahId != null) {
-            semuaKelas = semuaKelas.stream()
-                    .filter(k -> k.getMatakuliah().getId().equals(matakuliahId))
-                    .toList();
-        }
+        // Filter hanya kelas yang belum diikuti
+        List<Kelas> kelasTersedia = semuaKelas.stream()
+                .filter(k -> !kelasTerdaftarIds.contains(k.getId()))
+                .toList();
 
-        if (prodiId != null) {
-            semuaKelas = semuaKelas.stream()
-                    .filter(k -> k.getMatakuliah().getProdiList().stream()
-                            .anyMatch(p -> p.getId().equals(prodiId)))
-                    .toList();
-        }
-
-        if (fakultasId != null) {
-            semuaKelas = semuaKelas.stream()
-                    .filter(k -> k.getMatakuliah().getProdiList().stream()
-                            .anyMatch(p -> p.getFakultas() != null && p.getFakultas().getId().equals(fakultasId)))
-                    .toList();
-        }
-
+        // Inject ke model
         model.addAttribute("mahasiswa", mhs);
-        model.addAttribute("kelasTerdaftar", kelasTerdaftar);
-        model.addAttribute("semuaKelas", semuaKelas);
+        model.addAttribute("kelasTerdaftar", kelasTerdaftar);  // yang sudah diikuti
+        model.addAttribute("kelasTersedia", kelasTersedia);    // yang bisa diikuti
 
+        // Dropdowns
         model.addAttribute("fakultasList", fakultasRepository.findAll());
         model.addAttribute("prodiList", fakultasId != null ?
                 prodiRepository.findByFakultas_Id(fakultasId) : List.of());
-        model.addAttribute("matakuliahList", matakuliahRepository.findAll());
+        model.addAttribute("matakuliahList", prodiId != null ?
+                matakuliahRepository.findByProdi_Id(prodiId) : List.of());
 
         model.addAttribute("selectedFakultasId", fakultasId);
         model.addAttribute("selectedProdiId", prodiId);
@@ -79,7 +76,6 @@ public class MahasiswaController {
 
         return "mahasiswa/dashboard";
     }
-
     @PostMapping("/daftar-kelas")
     public String daftarKelas(@AuthenticationPrincipal User user,
                               @RequestParam Long kelasId,

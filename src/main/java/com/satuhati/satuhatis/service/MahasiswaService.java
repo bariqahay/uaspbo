@@ -17,6 +17,7 @@ public class MahasiswaService {
 
     private final MahasiswaRepository mahasiswaRepository;
     private final PasswordEncoder passwordEncoder;
+    private final com.satuhati.satuhatis.repository.UserRepository userRepository;
 
     public List<Mahasiswa> findAll() {
         return mahasiswaRepository.findAll();
@@ -35,18 +36,46 @@ public class MahasiswaService {
     }
 
     public Mahasiswa save(Mahasiswa mahasiswa) {
-        if (mahasiswa.getUser() != null && mahasiswa.getUser().getPassword() != null) {
-            String encoded = passwordEncoder.encode(mahasiswa.getUser().getPassword());
-            mahasiswa.getUser().setPassword(encoded);
+        var user = mahasiswa.getUser();
+
+        if (user == null) throw new IllegalArgumentException("User tidak boleh null");
+
+        if (user.getId() == null) {
+            // CREATE
+            user.setPassword(passwordEncoder.encode(user.getPassword()));
+            user.setRole("MAHASISWA");
+            user = userRepository.save(user);
+        } else {
+            // UPDATE
+            var existingUser = userRepository.findById(user.getId())
+                    .orElseThrow(() -> new RuntimeException("User tidak ditemukan"));
+
+            existingUser.setUsername(user.getUsername());
+
+            if (user.getPassword() != null && !user.getPassword().isBlank()) {
+                existingUser.setPassword(passwordEncoder.encode(user.getPassword()));
+            }
+
+            user = userRepository.save(existingUser);
         }
+
+        mahasiswa.setUser(user);
         return mahasiswaRepository.save(mahasiswa);
     }
 
+
     public void deleteById(Long id) {
-        mahasiswaRepository.deleteById(id);
+        mahasiswaRepository.findById(id).ifPresent(m -> {
+            var user = m.getUser();
+            mahasiswaRepository.deleteById(id);
+            if (user != null) {
+                userRepository.delete(user);
+            }
+        });
     }
 
     public boolean existsByNim(String nim) {
         return mahasiswaRepository.existsByNim(nim);
     }
 }
+
